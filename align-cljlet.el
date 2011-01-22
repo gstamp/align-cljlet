@@ -64,8 +64,15 @@
 
 
 (defun acl-found-let ()
-  (looking-at "\\s(let"))
-  
+  (save-excursion
+    (if (looking-at "(")
+        (progn 
+          (down-list)
+          (let ((start (point))
+                name)
+            (forward-sexp)
+            (setq name (buffer-substring-no-properties start (point)))
+            (string= name "let"))))))
 
 (defun acl-try-go-up ()
   (condition-case nil
