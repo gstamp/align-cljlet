@@ -63,26 +63,26 @@
 ;;
 
 
-(defun found-let ()
+(defun acl-found-let ()
   (looking-at "\\s(let"))
   
 
-(defun try-go-up ()
+(defun acl-try-go-up ()
   (condition-case nil
       (up-list -1)
     (error
      (error "Not in a \"let\" form")))
   t)
 
-(defun find-let ()
+(defun acl-find-let ()
   (while
-      (if (found-let)
+      (if (acl-found-let)
           nil
-        (try-go-up)
+        (acl-try-go-up)
         ))
   t)
 
-(defun goto-next-pair ()
+(defun acl-goto-next-pair ()
   (interactive)
   (condition-case nil
       (progn
@@ -93,22 +93,22 @@
         t)
     (error nil)))
 
-(defun get-width ()
+(defun acl-get-width ()
   (save-excursion
     (let ((p (point)))
       (forward-sexp)
       (- (point) p))))
 
-(defun calc-width ()
+(defun acl-calc-width ()
   (save-excursion
     (let ((width 0))
       (while (progn
-               (if (> (get-width) width)
-                   (setq width (get-width)))
-               (goto-next-pair)))
+               (if (> (acl-get-width) width)
+                   (setq width (acl-get-width)))
+               (acl-goto-next-pair)))
       width)))
 
-(defun respace-single-let (max-width)
+(defun acl-respace-single-let (max-width)
   (save-excursion
     (let (p current-width difference)
       (setq p (point))
@@ -125,23 +125,23 @@
       
       )))
 
-(defun respace-let (width)
+(defun acl-respace-let (width)
   (while (progn
-           (respace-single-let width)
-           (goto-next-pair))))
+           (acl-respace-single-let width)
+           (acl-goto-next-pair))))
 
-(defun align-let ()
+(defun acl-align-let ()
   ;; move to start of [
   (down-list 2)
-  (let ((w (calc-width)))
-    (respace-let w)
+  (let ((w (acl-calc-width)))
+    (acl-respace-let w)
     ))
 
 (defun align-cljlet ()
   (interactive)
   (save-excursion
-    (if (find-let)
-        (align-let))))
+    (if (acl-find-let)
+        (acl-align-let))))
 
 
 (provide 'align-cljlet)
