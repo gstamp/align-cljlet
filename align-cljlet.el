@@ -38,7 +38,11 @@
 ;; any of it's code.  I had considered altering align-let.el to
 ;; work correctly with Clojure however it was easiler to simply
 ;; start from scratch.
-;; 
+;;
+;;; Changes:
+;;
+;; 14-Jan-2011 - Initial release
+;; 23-Jan-2011 - Bug fixes and code cleanup.
 ;;
 ;;; Known limitations:
 ;;
@@ -64,6 +68,7 @@
 
 
 (defun acl-found-let ()
+  "Check if we are currently looking at a let form"
   (save-excursion
     (if (looking-at "(")
         (progn 
@@ -75,6 +80,8 @@
             (string-match " *let" name))))))
 
 (defun acl-try-go-up ()
+  "Go upwards if possible.  If we can't then we're obviously not in an
+   alignable form."
   (condition-case nil
       (up-list -1)
     (error
@@ -82,6 +89,7 @@
   t)
 
 (defun acl-find-let ()
+  "Find the let form by moving looking upwards until nowhere to go"
   (while
       (if (acl-found-let)
           nil
@@ -90,7 +98,7 @@
   t)
 
 (defun acl-goto-next-pair ()
-  (interactive)
+  "Skip ahead to the next definition"
   (condition-case nil
       (progn
         (forward-sexp)
@@ -101,12 +109,14 @@
     (error nil)))
 
 (defun acl-get-width ()
+  "Get the width of the current definition"
   (save-excursion
     (let ((col (current-column)))
       (forward-sexp)
       (- (current-column) col))))
 
 (defun acl-calc-width ()
+  "Calculate the width needed for all the definitions in the form"
   (save-excursion
     (let ((width 0))
       (while (progn
@@ -116,6 +126,7 @@
       width)))
 
 (defun acl-respace-single-let (max-width)
+  "Respace the current definition"
   (save-excursion
     (let (col current-width difference)
       (setq col (current-column))
@@ -133,6 +144,7 @@
       )))
 
 (defun acl-respace-let (width)
+  "Respace the entire definition"
   (let ((begin (point)))
     (while (progn
              (acl-respace-single-let width)
@@ -147,6 +159,7 @@
     ))
 
 (defun align-cljlet ()
+  "Align a let form so that the bindings neatly align into columns"
   (interactive)
   (save-excursion
     (if (acl-find-let)
