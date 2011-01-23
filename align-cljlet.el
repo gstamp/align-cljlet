@@ -72,7 +72,7 @@
                 name)
             (forward-sexp)
             (setq name (buffer-substring-no-properties start (point)))
-            (string= name "let"))))))
+            (string-match " *let" name))))))
 
 (defun acl-try-go-up ()
   (condition-case nil
