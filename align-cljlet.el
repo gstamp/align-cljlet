@@ -133,9 +133,11 @@
       )))
 
 (defun acl-respace-let (width)
-  (while (progn
-           (acl-respace-single-let width)
-           (acl-goto-next-pair))))
+  (let ((begin (point)))
+    (while (progn
+             (acl-respace-single-let width)
+             (acl-goto-next-pair)))
+    (indent-region begin (point))))
 
 (defun acl-align-let ()
   ;; move to start of [
