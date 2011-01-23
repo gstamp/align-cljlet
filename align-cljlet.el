@@ -102,9 +102,9 @@
 
 (defun acl-get-width ()
   (save-excursion
-    (let ((p (point)))
+    (let ((col (current-column)))
       (forward-sexp)
-      (- (point) p))))
+      (- (current-column) col))))
 
 (defun acl-calc-width ()
   (save-excursion
@@ -117,12 +117,12 @@
 
 (defun acl-respace-single-let (max-width)
   (save-excursion
-    (let (p current-width difference)
-      (setq p (point))
+    (let (col current-width difference)
+      (setq col (current-column))
       (forward-sexp)
       (forward-sexp)
       (backward-sexp)
-      (setq current-width (- (- (point) p) 1)
+      (setq current-width (- (- (current-column) col) 1)
             difference    (- max-width current-width))
       
       (cond ((> difference 0)
