@@ -77,7 +77,18 @@
                 name)
             (forward-sexp)
             (setq name (buffer-substring-no-properties start (point)))
-            (string-match " *let" name))))))
+            (or
+             (string-match " *let" name)
+             (string-match " *when-let" name)
+             (string-match " *if-let" name)
+             (string-match " *binding" name)
+             ;; Other possible binding types: loop, with-open, for.
+             ;; Before adding those need to add checks for cases
+             ;; where multiple conditions are added to a single line.
+             ;; Eg: (loop [foo 1 fobble 2] ...)  At the moment the
+             ;; code does not detect that these cases do not need
+             ;; horizontal alignment.
+             ))))))
 
 (defun acl-try-go-up ()
   "Go upwards if possible.  If we can't then we're obviously not in an
