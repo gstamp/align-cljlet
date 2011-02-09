@@ -67,7 +67,7 @@
 ;;
 
 
-(defun acl-found-let ()
+(defun acl-found-alignable-form ()
   "Check if we are currently looking at a let form"
   (save-excursion
     (if (looking-at "(")
@@ -99,10 +99,10 @@
      (error "Not in a \"let\" form")))
   t)
 
-(defun acl-find-let ()
+(defun acl-find-alignable-form ()
   "Find the let form by moving looking upwards until nowhere to go"
   (while
-      (if (acl-found-let)
+      (if (acl-found-alignable-form)
           nil
         (acl-try-go-up)
         ))
@@ -136,6 +136,17 @@
                (acl-goto-next-pair)))
       width)))
 
+(defun acl-lines-correctly-paired ()
+  "Determine if all the pairs are on different lines"
+  (save-excursion
+    (let ((current-line (line-number-at-pos)))
+      (while (progn
+               (acl-goto-next-pair))
+        (if (= current-line (line-number-at-pos))
+            (error "multiple pairs on one line")
+          (setq current-line (line-number-at-pos))))))
+  t)
+
 (defun acl-respace-single-let (max-width)
   "Respace the current definition"
   (save-excursion
@@ -154,7 +165,7 @@
       
       )))
 
-(defun acl-respace-let (width)
+(defun acl-respace-form (width)
   "Respace the entire definition"
   (let ((begin (point)))
     (while (progn
@@ -162,20 +173,20 @@
              (acl-goto-next-pair)))
     (indent-region begin (point))))
 
-(defun acl-align-let ()
+(defun acl-align-form ()
   ;; move to start of [
   (down-list 2)
-  (let ((w (acl-calc-width)))
-    (acl-respace-let w)
-    ))
+  (if (acl-lines-correctly-paired)
+      (let ((w (acl-calc-width)))
+        (acl-respace-form w)
+        )))
 
 (defun align-cljlet ()
   "Align a let form so that the bindings neatly align into columns"
   (interactive)
   (save-excursion
-    (if (acl-find-let)
-        (acl-align-let))))
-
+    (if (acl-find-alignable-form)
+        (acl-align-form))))
 
 (provide 'align-cljlet)
 
