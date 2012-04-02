@@ -1,9 +1,10 @@
-;;; align-cljlet.el  -- Align clojure let functions
+;;; align-cljlet.el --- Space align various Clojure forms 
 
 ;; Copyrigth (C) 2011  Glen Stampoultzis
 
 ;; Author: Glen Stampoultzis <gstamp(at)gmail.com>
-;; Version: $Id:$
+;; Version: 0.1
+;; Package-Requires: ((clojure-mode "1.11.5"))
 ;; Keywords; clojure, align, let
 ;; URL: https://github.com/gstamp/align-cljlet
 ;;
@@ -43,6 +44,7 @@
 ;;
 ;; 14-Jan-2011 - Initial release
 ;; 23-Jan-2011 - Bug fixes and code cleanup.
+;; 02-Apr-2012 - Package up for Marmalade
 ;;
 ;;; Known limitations:
 ;;
@@ -63,7 +65,7 @@
 ;;
 ;; M-x align-cljlet
 ;;
-;; You may wish to bound this to a specific key.
+;; You may wish to bind this to a specific key.
 ;;
 
 
@@ -218,3 +220,5 @@ from `beginning-of-defun'.  If it finds nothing then just go to
   (interactive)
   (up-list -1)
   )
+
+;;; align-cljlet.el ends here
