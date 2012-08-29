@@ -45,6 +45,7 @@
 ;; 14-Jan-2011 - Initial release
 ;; 23-Jan-2011 - Bug fixes and code cleanup.
 ;; 02-Apr-2012 - Package up for Marmalade
+;; 30-Aug-2012 - Support for aligning defroute.
 ;;
 ;;; Known limitations:
 ;;
@@ -67,7 +68,15 @@
 ;;
 ;; You may wish to bind this to a specific key.
 ;;
+;; Contains one custom variable called defroute-columns which is
+;; used to determine how many columns to align in a defroute call.
+;; Defaults to 1.
+;;
 
+(defcustom defroute-columns 1
+  "The number of columns to align in a defroute call"
+  :type 'integer
+  :group 'align-cljlet)
 
 (defun acl-found-alignable-form ()
   "Check if we are currently looking at a let form"
@@ -235,14 +244,19 @@ positioned on the defroute form."
              (acl-goto-next-pair)))
     (indent-region begin (point))))
 
+(defun acl-take-n (n xs)
+  "Take n elements from a list returning a new list"
+  (butlast xs (- (length xs) n)))
+
 (defun acl-align-form ()
+  "Determine what type of form we are currently positioned at and align it"
   (if (looking-at "( *defroutes")
       (progn
         (down-list 1)
         (forward-sexp 3)
         (backward-sexp)                 ; this position's us back at the start of the
                                         ; first form.
-        (acl-respace-defroute-form (acl-calc-route-widths)))
+        (acl-respace-defroute-form (acl-take-n defroute-columns (acl-calc-route-widths))))
     (progn
       (if (not (looking-at "{"))
           ;; move to start of [
