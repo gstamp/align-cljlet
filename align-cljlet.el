@@ -315,6 +315,7 @@ from `beginning-of-defun'.  If it finds nothing then just go to
              (goto-char (1- (point))))))))
 
 
+;;;###autoload
 (defun align-cljlet ()
   "Align a let form so that the bindings neatly align into columns"
   (interactive)
