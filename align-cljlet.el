@@ -46,6 +46,7 @@
 ;; 23-Jan-2011 - Bug fixes and code cleanup.
 ;; 02-Apr-2012 - Package up for Marmalade
 ;; 30-Aug-2012 - Support for aligning defroute.
+;; 04-Nov-2015 - Support for metadata when calculating widths
 ;;
 ;;; Known limitations:
 ;;
@@ -122,12 +123,23 @@
         ))
   t)
 
+(defun acl-forward-sexp ()
+  (condition-case nil
+      (progn
+        (while (or (looking-at "\\^")
+                   (looking-at "\\s-"))
+          (if (looking-at "\\s-")
+              (forward-char)
+            (forward-sexp)))
+        (forward-sexp))
+    (error nil)))
+
 (defun acl-goto-next-pair ()
   "Skip ahead to the next definition"
   (condition-case nil
       (progn
-        (forward-sexp)
-        (forward-sexp)
+        (acl-forward-sexp)
+        (acl-forward-sexp)
         (forward-sexp)
         (backward-sexp)
         t)
@@ -137,7 +149,7 @@
   "Get the width of the current definition"
   (save-excursion
     (let ((col (current-column)))
-      (forward-sexp)
+      (acl-forward-sexp)
       (- (current-column) col))))
 
 (defun acl-has-next-sexp ()
@@ -145,7 +157,7 @@
   (save-excursion
     (condition-case nil
         (progn
-          (forward-sexp)
+          (acl-forward-sexp)
           't)
       ('error nil))))
 
@@ -154,7 +166,8 @@
 
   (condition-case nil
       (progn
-        (forward-sexp 2)
+        (acl-forward-sexp)
+        (acl-forward-sexp)
         (backward-sexp)
         't)
     ('error nil)))
@@ -185,7 +198,8 @@
   (save-excursion
     (condition-case nil
         (progn
-          (forward-sexp 2)
+          (acl-forward-sexp)
+          (acl-forward-sexp)
           t)
       (error nil))))
 
