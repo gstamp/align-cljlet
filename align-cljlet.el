@@ -47,6 +47,7 @@
 ;; 02-Apr-2012 - Package up for Marmalade
 ;; 30-Aug-2012 - Support for aligning defroute.
 ;; 04-Nov-2015 - Support for metadata when calculating widths
+;; 04-Nov-2015 - Support for aligning for
 ;;
 ;;; Known limitations:
 ;;
@@ -92,6 +93,7 @@
             (setq name (buffer-substring-no-properties start (point)))
             (or
              (string-match " *let" name)
+             (string-match " *for" name)
              (string-match " *when-let" name)
              (string-match " *if-let" name)
              (string-match " *binding" name)
