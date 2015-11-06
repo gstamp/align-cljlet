@@ -50,11 +50,12 @@
    (> grade 70)    \"C\"
    (> grade 60) \"D\"
    :else        \"F\")"
-   "(cond\n (> grade 90) \"A\"
- (> grade 80) \"B\"
- (> grade 70) \"C\"
- (> grade 60) \"D\"
- :else        \"F\")")
+   "(cond
+  (> grade 90) \"A\"
+  (> grade 80) \"B\"
+  (> grade 70) \"C\"
+  (> grade 60) \"D\"
+  :else        \"F\")")
 
   ;; TODO: Currently does not handle :>> forms
   )
@@ -80,11 +81,12 @@
    (> grade 70)    \"C\"
    (> grade 60) \"D\"
    :else        \"F\")"
-   "(cond\n (> grade 90) \"A\"
- (> grade 80) \"B\"
- (> grade 70) \"C\"
- (> grade 60) \"D\"
- :else        \"F\")"))
+   "(cond
+  (> grade 90) \"A\"
+  (> grade 80) \"B\"
+  (> grade 70) \"C\"
+  (> grade 60) \"D\"
+  :else        \"F\")"))
 
 (ert-deftest calc-route-widths ()
   (with-temp-buffer
