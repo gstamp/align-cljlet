@@ -28,6 +28,14 @@
       orange 2])")
   )
 
+(ert-deftest align-let-with-tagged-type ()
+  (acl-should-align "
+      (let [^Long apple 1
+            orange 2])"
+                    "
+(let [^Long apple 1
+      orange      2])"))
+
 (ert-deftest align-hash ()
   (acl-should-align
    "
@@ -59,6 +67,17 @@
 
   ;; TODO: Currently does not handle :>> forms
   )
+
+(ert-deftest align-for ()
+  (acl-should-align
+   "
+(for [apple [1 2]
+            orange [3 4]]
+     [apple orange])"
+   "
+(for [apple  [1 2]
+      orange [3 4]]
+     [apple orange])"))
 
 (ert-deftest align-condp ()
   (acl-should-align
