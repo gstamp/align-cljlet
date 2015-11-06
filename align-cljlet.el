@@ -126,15 +126,13 @@
   t)
 
 (defun acl-forward-sexp ()
-  (condition-case nil
-      (progn
-        (while (or (looking-at "\\^")
-                   (looking-at "\\s-"))
-          (if (looking-at "\\s-")
-              (forward-char)
-            (forward-sexp)))
-        (forward-sexp))
-    (error nil)))
+  (progn
+    (while (or (looking-at "\\^")
+               (looking-at "\\s-"))
+      (if (looking-at "\\s-")
+          (forward-char)
+        (forward-sexp)))
+    (forward-sexp)))
 
 (defun acl-goto-next-pair ()
   "Skip ahead to the next definition"
