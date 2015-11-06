@@ -60,3 +60,8 @@ invoke:
  M-x align-cljlet
 
 You may wish to bind this to a specific key.
+
+# Contributors
+
+- Glen Stampoultzis
+- Reid D McKenzie
