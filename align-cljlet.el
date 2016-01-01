@@ -3,7 +3,7 @@
 ;; Copyrigth (C) 2011  Glen Stampoultzis
 
 ;; Authors: Glen Stampoultzis <gstamp(at)gmail.com>, Reid D McKenzie <https://github.com/arrdem>
-;; Version: 0.4
+;; Version: 0.5
 ;; Package-Requires: ((clojure-mode "1.11.5"))
 ;; Keywords; clojure, align, let
 ;; URL: https://github.com/gstamp/align-cljlet
@@ -48,6 +48,7 @@
 ;; 30-Aug-2012 - Support for aligning defroute.
 ;; 04-Nov-2015 - Support for metadata when calculating widths
 ;; 04-Nov-2015 - Support for aligning for
+;; 01-Jan-2016 - Support for reader macros
 ;;
 ;;; Known limitations:
 ;;
