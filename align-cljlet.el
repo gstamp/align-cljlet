@@ -126,13 +126,7 @@
   t)
 
 (defun acl-forward-sexp ()
-  (progn
-    (while (or (looking-at "\\^")
-               (looking-at "\\s-"))
-      (if (looking-at "\\s-")
-          (forward-char)
-        (forward-sexp)))
-    (forward-sexp)))
+  (call-interactively 'clojure-forward-logical-sexp))
 
 (defun acl-goto-next-pair ()
   "Skip ahead to the next definition"

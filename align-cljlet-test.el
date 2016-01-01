@@ -50,6 +50,20 @@
   (acl-should-error
    " {:a 1 :b 2}"))
 
+(ert-deftest align-hash-with-reader-macro ()
+  (acl-should-align
+   "
+      {#foo/bar [1 2 3] 234
+       :foobar (list 1 2 3)
+}"
+   "
+{#foo/bar [1 2 3] 234
+ :foobar          (list 1 2 3)
+}")
+
+  (acl-should-error
+   " {:a 1 :b 2}"))
+
 (ert-deftest align-cond ()
   (acl-should-align
    "(cond
