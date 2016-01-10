@@ -1,5 +1,65 @@
 (require 'align-cljlet)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Unit Tests
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defun acl-forward-sexp-should-move-to (initial-buffer expected-buffer)
+  (with-temp-buffer
+    (clojure-mode)
+    (insert initial-buffer)
+    (goto-char (point-min))
+    (search-forward "|" nil nil 1)
+    (delete-backward-char 1)
+    (acl-forward-sexp)
+    (insert "|")
+    (should (equal (buffer-substring-no-properties 1 (point-max))
+                   expected-buffer))))
+
+(ert-deftest acl-foward-sexp-test ()
+             (acl-forward-sexp-should-move-to "|a b"
+                                              "a| b")
+             (acl-forward-sexp-should-move-to "a| b"
+                                              "a b|")
+             (acl-forward-sexp-should-move-to "a b|"
+                                              "a b|")
+             (acl-forward-sexp-should-move-to "|#foo/bar [1 2 3] [1 2 3]"
+                                              "#foo/bar [1 2 3]| [1 2 3]")
+             (acl-forward-sexp-should-move-to "|^int 123 999"
+                                              "^int 123| 999")
+             (acl-forward-sexp-should-move-to "|#_(ignore me) 123 999"
+                                              "#_(ignore me) 123| 999")
+             (acl-forward-sexp-should-move-to "|123 #_(ignore me) 999"
+                                              "123| #_(ignore me) 999")
+             (acl-forward-sexp-should-move-to "123| #_(ignore me) 999"
+                                              "123 #_(ignore me) 999|")
+             )
+
+(defun acl-goto-next-pair-should-move-to (initial-buffer expected-buffer)
+  (with-temp-buffer
+    (clojure-mode)
+    (insert initial-buffer)
+    (goto-char (point-min))
+    (search-forward "|" nil nil 1)
+    (delete-backward-char 1)
+    (acl-goto-next-pair)
+    (let ((expected-position (1+ (string-match "|" expected-buffer))))
+      (should (equal (point)
+                     expected-position)))))
+
+(ert-deftest acl-goto-next-pair-test ()
+  (acl-goto-next-pair-should-move-to "|a b c d" "a b |c d")
+  (acl-goto-next-pair-should-move-to "a b |c d e f" "a b c d |e f")
+  (acl-goto-next-pair-should-move-to "a b c d |e f" "a b c d e |f") ;; slightly odd behaviour here
+  (acl-goto-next-pair-should-move-to "|(1 2 3) b c d" "(1 2 3) b |c d")
+  (acl-goto-next-pair-should-move-to "|a #_(1 2 3) b c d" "a #_(1 2 3) b |c d")
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Alignment tests
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun acl-should-error (buffer)
   (with-temp-buffer
     (clojure-mode)
@@ -16,8 +76,8 @@
     (goto-char (point-min))
     (down-list)
     (align-cljlet)
-    (should (equal expected
-                   (buffer-substring-no-properties (point-min) (point-max))))))
+    (should (equal (buffer-substring-no-properties (point-min) (point-max))
+                   expected))))
 
 (ert-deftest align-let ()
   (acl-should-align "
@@ -59,28 +119,56 @@
    "
 {#foo/bar [1 2 3] 234
  :foobar          (list 1 2 3)
-}")
+}"))
 
-  (acl-should-error
-   " {:a 1 :b 2}"))
+(ert-deftest align-hash-with-commented-form ()
+  (acl-should-align
+   "
+(let [variable-a     #_(slow-database-call) 1
+      some-other-variable 2] body)
+"
+   "
+(let [variable-a          #_(slow-database-call) 1
+      some-other-variable 2] body)
+"))
+
+(ert-deftest align-hash-with-commented-form-at-front ()
+  (acl-should-align
+   "
+(let [#_(slow-database-call) variable-a 1
+      some-other-variable  2] body)
+"
+   "
+(let [#_(slow-database-call) variable-a 1
+      some-other-variable               2] body)
+"))
+
+(ert-deftest align-hash-with-all-sorts-of-commented-forms ()
+  (acl-should-align
+   "
+(let [#_(slow-database-call) variable-a #_(1 2 3) 1
+        some-other-variable 2] body)"
+   "
+(let [#_(slow-database-call) variable-a #_(1 2 3) 1
+      some-other-variable               2] body)"))
 
 (ert-deftest align-cond ()
-  (acl-should-align
-   "(cond
+             (acl-should-align
+              "(cond
    (> grade 90) \"A\"
    (> grade 80)    \"B\"
    (> grade 70)    \"C\"
    (> grade 60) \"D\"
    :else        \"F\")"
-   "(cond
+              "(cond
   (> grade 90) \"A\"
   (> grade 80) \"B\"
   (> grade 70) \"C\"
   (> grade 60) \"D\"
   :else        \"F\")")
 
-  ;; TODO: Currently does not handle :>> forms
-  )
+             ;; TODO: Currently does not handle :>> forms
+             )
 
 (ert-deftest align-for ()
   (acl-should-align
